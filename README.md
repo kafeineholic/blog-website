@@ -52,108 +52,6 @@ npm run start
 
 ---
 
-## Admin Workflow
-
-### Authentication Flow
-
-1. Navigate to `/auth/login`
-2. Login with mock credentials:
-   - **Email:** `admin@blog.com`
-   - **Password:** `admin123`
-3. Access token is stored in `AuthContext`
-4. Redirected to `/admin` dashboard
-
-### Blog Management
-
-**Operations:**
-- ✅ **Create** — Add new blog post with title, slug, excerpt, content, cover image
-- ✅ **List** — View all blogs (drafts + published) with pagination
-- ✅ **Edit** — Modify existing blog details (slug is immutable)
-- ✅ **Publish/Unpublish** — Toggle blog visibility and set `publishedAt` timestamp
-- ✅ **Delete** — Remove blog post and associated data
-
-**Features:**
-- Real-time status updates
-- Automatic `viewCount` tracking on blog detail views
-- Support for cover images
-- Title-based search (on frontend)
-
-### Comment Moderation
-
-**Operations:**
-- ✅ **View** — Browse all visitor comments
-- ✅ **Filter** — Filter by status (PENDING, APPROVED, REJECTED)
-- ✅ **Approve** — Make comment visible on blog post
-- ✅ **Reject** — Hide rejected comments
-- ✅ **Delete** — Remove comment permanently
-
-**Comment Validation:**
-- Author name (required)
-- Content: **Thai characters and digits only** (regex: `/^[ก-๙0-9\s]+$/`)
-- Unpublished comments are hidden from public view
-
----
-
-## Project Structure
-
-```
-blog-website/
-├── src/
-│   ├── app/
-│   │   ├── admin/              # Admin routes (protected)
-│   │   │   ├── layout.tsx      # Admin layout with auth & sidebar
-│   │   │   ├── page.tsx        # Admin dashboard
-│   │   │   ├── blogs/          # Blog management
-│   │   │   │   └── page.tsx
-│   │   │   └── comments/       # Comment moderation
-│   │   │       └── page.tsx
-│   │   ├── auth/
-│   │   │   └── login/          # Login page
-│   │   │       └── page.tsx
-│   │   ├── blog/
-│   │   │   └── [blogId]/       # Blog detail page
-│   │   │       └── page.tsx
-│   │   ├── lib/
-│   │   │   ├── apiClient.ts    # API client wrapper
-│   │   │   ├── mockApiClient.ts # Mock API service
-│   │   │   ├── mock-api-data.ts # Mock data
-│   │   │   ├── types.ts        # TypeScript types
-│   │   │   └── mui-theme.ts    # MUI theme config
-│   │   ├── components/
-│   │   │   ├── AuthProvider.tsx  # Auth context provider
-│   │   │   ├── Header/
-│   │   │   ├── Sidebar/
-│   │   │   ├── BlogList/
-│   │   │   └── ... other components
-│   │   └── layout.tsx          # Root layout
-│   └── docs/
-│       ├── schema.prisma       # Prisma schema (reference only)
-│       └── openapi.yaml        # API documentation
-├── package.json
-├── tsconfig.json
-├── next.config.ts
-├── tailwind.config.js
-└── eslint.config.mjs
-```
-
----
-
-## NPM Scripts
-
-```bash
-# Development
-npm run dev          # Start dev server
-
-# Production
-npm run build        # Build optimized production bundle
-npm run start        # Start production server
-
-# Linting
-npm run lint         # Run ESLint
-```
-
----
-
 ## Data Models
 
 ### Blog
@@ -202,19 +100,6 @@ interface User {
   createdAt: string;
 }
 ```
-
----
-
-## Environment Configuration
-
-No environment variables are required for development. The application uses:
-- **In-memory mock data** for blogs, comments, and users
-- **Local storage** for authentication tokens
-- **URL-based routing** for navigation
-
-> **Note:** To integrate with a real backend API (NestJS + PostgreSQL as documented in README2.md), you would need to update `apiClient.ts` to make actual HTTP requests instead of calling `mockApiService`.
-
----
 
 ## API Layer Documentation
 
@@ -379,87 +264,26 @@ All endpoints return errors in this format:
 | `404` | `{ "error": "Not Found", "message": "..." }` | Resource not found |
 | `500` | `{ "error": "Server Error", "message": "..." }` | Server-side error |
 
----
-
-## Important Notes
-
-1. **Authentication:** Uses mock JWT tokens. In production, implement real JWT validation on the backend.
-
-2. **Data Persistence:** All data is stored in memory. Refreshing the browser will reset to mock data. For production, connect to a PostgreSQL database using the Prisma schema.
-
-3. **Comment Validation:** Thai character validation is performed on the frontend. Server-side validation should be added in a real backend (see regex: `/^[ก-๙0-9\s]+$/`).
-
-4. **Route Protection:** Admin routes (`/admin/*`) require authentication. Protected by layout-level checks in `AdminManagerLayout`.
-
-5. **File Cleanup:** Removed stale/duplicate files:
-   - ❌ `/src/app/lib/api.ts` (empty)
-   - ❌ `/src/app/lib/apiClient.ts.new` (empty)
-   - ❌ `/src/app/lib/mock-data.ts` (old data structure)
-   - ❌ `/src/app/lib/utils.ts` (empty)
-   - ❌ `/src/app/lib/theme.ts` (unused, replaced by mui-theme.ts)
-   - ❌ `/src/app/admin/login` (redundant redirect)
 
 ---
 
-## Troubleshooting
+## Current Limitations
+- UI design is kept minimal and not fully polished
+- Backend is not implemented (mock API is used instead)
+- Authentication is simulated (no real JWT implementation)
+- Some advanced features such as image upload and rich text editor are not included
 
-### Build Errors
-```bash
-# Clear cache and reinstall
-rm -rf node_modules package-lock.json .next
-npm install
-npm run build
-```
-
-### TypeScript Errors
-```bash
-# Regenerate TypeScript types
-npm run build
-```
-
-### Login Not Working
-- Check that you're using the correct credentials: `admin@blog.com` / `admin123`
-- Clear browser storage: `localStorage.clear()`
-- Ensure cookies are enabled
-
----
+--- 
 
 ## Future Enhancements
 
 To extend this project:
 
-1. **Real Backend Integration**
-   - Replace `mockApiService` with actual HTTP calls in `apiClient.ts`
-   - Set up NestJS backend (see README2.md for architecture)
-   - Connect PostgreSQL database with Prisma
+- Enhance UI/UX with better spacing, typography, and responsive design
+- Implement real backend using NestJS and connect with PostgreSQL
+- Add authentication system with JWT for admin access
+- Improve performance with server-side rendering and caching
+- Add image upload functionality and content editor for blog creation
+- Implement proper error handling and loading states across all pages
 
-2. **Image Management**
-   - Implement image upload to support 6 images per blog
-   - Add image gallery component
 
-3. **Advanced Features**
-   - Comment nested replies
-   - Blog categories/tags
-   - User roles (editor, author, admin)
-   - Email notifications
-   - Analytics dashboard
-
-4. **Performance**
-   - Add caching strategies
-   - Implement pagination optimizations
-   - Add image lazy loading
-
----
-
-## Resources
-
-- [Next.js Documentation](https://nextjs.org/docs)
-- [Material-UI Documentation](https://mui.com)
-- [Prisma Documentation](https://www.prisma.io/docs)
-- [TypeScript Handbook](https://www.typescriptlang.org/docs)
-
----
-
-## License
-
-This project is provided as-is for educational purposes.

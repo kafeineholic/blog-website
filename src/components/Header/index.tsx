@@ -32,9 +32,7 @@ interface IProps {
 const Header = ({ isAdmin }: IProps) => {
   const theme = useTheme();
   const { isLoggedIn, logout } = useAuth();
-  
-  // Always use the public header style for all pages
-  return (
+    return (
     <Container>
       <Link href="/" className="inline-flex items-center">
         <Image
